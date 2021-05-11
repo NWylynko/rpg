@@ -1,11 +1,13 @@
 import React, { createContext, useState, useContext } from "react";
 import { useInput } from "ink";
-import { useWorld } from "./world"
+import { useWorld } from "./world";
 
 interface PlayerStore {
-  playerX: number;
+	playerX: number;
 	playerY: number;
 	setUpdatePlayerLocation: React.Dispatch<React.SetStateAction<boolean>>;
+	health: number;
+	setHealth: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const StoreContext = createContext<PlayerStore>({} as PlayerStore);
@@ -19,17 +21,17 @@ interface PlayerStoreProviderProps {
 export function PlayerStoreProvider({
 	children,
 }: PlayerStoreProviderProps): JSX.Element {
+	const { width, height } = useWorld();
 
-  const { width, height } = useWorld();
+	const [playerX, setPlayerX] = useState(14);
+	const [playerY, setPlayerY] = useState(6);
 
-	const [playerX, setPlayerX] = useState(Math.floor((width - 7) / 2));
-	const [playerY, setPlayerY] = useState(height / 2);
-	
 	// toggle to false to not allow the player to be updated by arrow keys
 	const [updatePlayerLocation, setUpdatePlayerLocation] = useState(true);
-  
-  useInput((_, key) => {
 
+	const [health, setHealth] = useState(1);
+
+	useInput((_, key) => {
 		if (!updatePlayerLocation) {
 			return;
 		}
@@ -48,7 +50,8 @@ export function PlayerStoreProvider({
 	const store: PlayerStore = {
 		playerX,
 		playerY,
-		setUpdatePlayerLocation
+		setUpdatePlayerLocation,
+		health, setHealth
 	};
 
 	return (
