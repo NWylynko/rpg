@@ -1,13 +1,19 @@
-import React from "react"
-import { AssetProps } from './assets';
+import React from "react";
+import { AssetProps } from "./assets";
 import { Campfire } from "./assets/Campfire";
 
 export interface Stage {
-  stage: string;
-  missions: {
-    dialogue: string
-  }[];
-  assets: AssetProps[];
+	stage: string;
+	missions: Mission[];
+	assets: Asset[];
+}
+
+export interface Mission {
+	dialogue: string;
+}
+
+export interface Asset extends AssetProps {
+	onContact: "nextMission"
 }
 
 export const stages: Stage[] = [
@@ -17,6 +23,9 @@ export const stages: Stage[] = [
 			{
 				dialogue: "Walk up to the campfire with you right arrow key",
 			},
+			{
+				dialogue: "try not to get burnt by the fire, but keep going for an adventure"
+			}
 		],
 		assets: [
 			{
@@ -24,7 +33,8 @@ export const stages: Stage[] = [
 				contactRadius: 10,
 				x: 36,
 				y: 7,
-				id: "campfire_1"
+				id: "campfire_1",
+				onContact: "nextMission"
 			},
 		],
 	},

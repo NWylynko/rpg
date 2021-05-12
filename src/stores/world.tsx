@@ -1,16 +1,18 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 import pointDistance from "point-distance";
-import { useInterface } from './interface';
-import { stages, Stage } from "../stages";
+import { useInterface } from "./interface";
+import { stages, Stage, Mission } from "../stages";
 interface WorldStore {
 	width: number;
 	height: number;
 	objects: Object[];
 	addObject: (object: Object) => void;
 	removeObject: (id: string) => void;
-	updateObjectLocation: (object: ObjectUpdate) => void;
+	updateObjectLocation: (object: Object) => void;
 	stage: Stage;
 	nextStage: () => void;
+	mission: Mission;
+	nextMission: () => void;
 }
 
 const StoreContext = createContext<WorldStore>({} as WorldStore);
@@ -26,30 +28,27 @@ interface Object {
 	x: number;
 	y: number;
 	contactRadius?: number;
-	inContactWith?: [];
-}
-
-interface ObjectUpdate {
-	id: string;
-	x?: number;
-	y?: number;
-	contactRadius?: number;
+	inContactWith?: (string | false)[];
 }
 
 export function WorldStoreProvider({
 	children,
 }: WorldStoreProviderProps): JSX.Element {
-
 	const { resetDialogue } = useInterface();
 
 	const width = 60;
 	const height = 16;
 
 	const [stageIndex, setStageIndex] = useState(0);
+	const [missionIndex, setMissionIndex] = useState(0);
 
 	const nextStage = () => {
-		setStageIndex(s => s + 1);
-		resetDialogue()
+		setStageIndex((s) => s + 1);
+		resetDialogue();
+	};
+
+	const nextMission = () => {
+		setMissionIndex((s) => s + 1);
 	}
 
 	const [objects, setObjects] = useState<Object[]>([]);
@@ -62,7 +61,7 @@ export function WorldStoreProvider({
 		setObjects((s) => s.filter((object) => object.id !== id));
 	};
 
-	const updateObjectLocation = (object: ObjectUpdate) => {
+	const updateObjectLocation = (object: Object) => {
 		setObjects((s) => {
 			const index = s.findIndex((obj) => obj.id === object.id);
 
@@ -74,7 +73,9 @@ export function WorldStoreProvider({
 				selectedObject = s.splice(index, 1)[0] || ({} as Object);
 			}
 
-			selectedObject = {...selectedObject, ...object}
+			object.inContactWith = updateObjectsInRadius(object);
+
+			selectedObject = { ...selectedObject, ...object };
 
 			s = [...s, selectedObject];
 
@@ -82,19 +83,26 @@ export function WorldStoreProvider({
 		});
 	};
 
-	useEffect(() => {
-		const objDistanceLooking = objects.filter((obj) => obj.contactRadius);
-		objDistanceLooking.forEach(({ x, y, id, contactRadius }) => {
-			const otherObjects = objects.filter((obj) => obj.id !== id);
-			console.log(
-				otherObjects.map((obj2) => {
-					return (
-						pointDistance([x, y], [obj2.x, obj2.y]) < (contactRadius || 10) && obj2.id
-					);
-				})
-			);
-		});
-	}, [objects]);
+	const updateObjectsInRadius = ({
+		x,
+		y,
+		id,
+		contactRadius,
+	}: Object): (string | false)[] => {
+		const otherObjects = objects.filter((obj) => obj.id !== id);
+
+		const inContactWith = otherObjects
+			.map((obj2) => {
+				return (
+					pointDistance([x, y], [obj2.x, obj2.y]) < (contactRadius || 10) &&
+					obj2.id
+				);
+			}).filter((obj) => obj !== false);
+
+		return inContactWith;
+	};
+ 
+		const stage: Stage = stages[stageIndex] || ({} as Stage);
 
 	const store: WorldStore = {
 		width,
@@ -103,8 +111,10 @@ export function WorldStoreProvider({
 		addObject,
 		removeObject,
 		updateObjectLocation,
-		stage: stages[stageIndex] || {} as Stage,
-		nextStage
+		nextStage,
+		stage,
+		mission: stage.missions[missionIndex] || ({} as Mission),
+		nextMission
 	};
 
 	return (
