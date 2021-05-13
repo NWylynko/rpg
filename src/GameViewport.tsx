@@ -1,12 +1,8 @@
 import React from "react";
-import {
-	useInput,
-	useApp,
-	Box,
-	Text
-} from "ink";
+import { useInput, useApp, Box } from "ink";
 import { Asset } from "./assets";
 import { Campfire } from "./assets/Campfire";
+import { Player } from "./assets/Player";
 import { usePlayer } from "./stores/player";
 import { useWorld } from "./stores/world";
 import { margin } from "./App";
@@ -28,19 +24,15 @@ export function GameViewport() {
 			flexDirection="column"
 			margin={margin}
 			height={height + margin * 2}
-			borderColor="white"
-			borderStyle="round"
+			// borderColor="white"
+			// borderStyle="round"
 		>
-			<Asset x={playerX} y={playerY} id="player">
-				<Text color="red"> _ _</Text>
-				<Text color="red"> °-°</Text>
-				<Text color="red">🗡️-|-🗡️</Text>
-				<Text color="red"> / \</Text>
-			</Asset>
-
-
 			<Asset x={36} y={7} id="campfire_1" contactRadius={10}>
 				<Campfire />
+			</Asset>
+
+			<Asset x={playerX} y={playerY} id="player">
+				<Player />
 			</Asset>
 		</Box>
 	);

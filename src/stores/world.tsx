@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import pointDistance from "point-distance";
-
+import { useInterface } from './interface';
+import { stages, Stage } from "../stages";
 interface WorldStore {
 	width: number;
 	height: number;
@@ -8,6 +9,8 @@ interface WorldStore {
 	addObject: (object: Object) => void;
 	removeObject: (id: string) => void;
 	updateObjectLocation: (object: ObjectUpdate) => void;
+	stage: Stage;
+	nextStage: () => void;
 }
 
 const StoreContext = createContext<WorldStore>({} as WorldStore);
@@ -36,8 +39,18 @@ interface ObjectUpdate {
 export function WorldStoreProvider({
 	children,
 }: WorldStoreProviderProps): JSX.Element {
+
+	const { resetDialogue } = useInterface();
+
 	const width = 60;
 	const height = 16;
+
+	const [stageIndex, setStageIndex] = useState(0);
+
+	const nextStage = () => {
+		setStageIndex(s => s + 1);
+		resetDialogue()
+	}
 
 	const [objects, setObjects] = useState<Object[]>([]);
 
@@ -61,18 +74,7 @@ export function WorldStoreProvider({
 				selectedObject = s.splice(index, 1)[0] || ({} as Object);
 			}
 
-			if (object.id) {
-				selectedObject.id = object.id;
-			}
-			if (object.x) {
-				selectedObject.x = object.x;
-			}
-			if (object.y) {
-				selectedObject.y = object.y;
-			}
-			if (object.contactRadius) {
-				selectedObject.contactRadius = object.contactRadius;
-			}
+			selectedObject = {...selectedObject, ...object}
 
 			s = [...s, selectedObject];
 
@@ -101,6 +103,8 @@ export function WorldStoreProvider({
 		addObject,
 		removeObject,
 		updateObjectLocation,
+		stage: stages[stageIndex] || {} as Stage,
+		nextStage
 	};
 
 	return (

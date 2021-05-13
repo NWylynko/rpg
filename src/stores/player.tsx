@@ -39,11 +39,11 @@ export function PlayerStoreProvider({
 		if (key.leftArrow) {
 			setPlayerX(Math.max(0, playerX - 1));
 		} else if (key.rightArrow) {
-			setPlayerX(Math.min(width - 7, playerX + 1));
+			setPlayerX(Math.min(width - 8, playerX + 1));
 		} else if (key.upArrow) {
 			setPlayerY(Math.max(0, playerY - 1));
 		} else if (key.downArrow) {
-			setPlayerY(Math.min(height - 1, playerY + 1));
+			setPlayerY(Math.min(height - 4, playerY + 1));
 		}
 	});
 

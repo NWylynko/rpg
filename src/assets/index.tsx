@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Box } from "ink";
 import { useWorld } from "../stores/world";
 
-interface AssetProps {
+export interface AssetProps {
   children: JSX.Element | JSX.Element[];
   x: number;
   y: number;
