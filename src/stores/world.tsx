@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
 import pointDistance from "point-distance";
-import { useInterface } from "./interface";
 import { stages, Stage, Mission } from "../stages";
 interface WorldStore {
 	width: number;
@@ -34,7 +33,6 @@ interface Object {
 export function WorldStoreProvider({
 	children,
 }: WorldStoreProviderProps): JSX.Element {
-	const { resetDialogue } = useInterface();
 
 	const width = 60;
 	const height = 16;
@@ -44,8 +42,11 @@ export function WorldStoreProvider({
 
 	const nextStage = () => {
 		setStageIndex((s) => s + 1);
-		resetDialogue();
 	};
+
+	const backStage = () => {
+		setStageIndex((s) => s - 1);
+	}
 
 	const nextMission = () => {
 		setMissionIndex((s) => s + 1);
@@ -82,7 +83,8 @@ export function WorldStoreProvider({
 					if (onContact) {
 						const func = {
 							"nextMission": nextMission,
-							"nextStage": nextStage
+							"nextStage": nextStage,
+							"backStage": backStage
 						}
 						func[onContact]()
 					}
