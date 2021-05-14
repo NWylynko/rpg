@@ -15,14 +15,13 @@ import { useInterface } from "./stores/interface";
 import { useWorld } from "./stores/world";
 import { Stats } from "./Stats";
 import { GameViewport } from "./GameViewport";
-import {stages} from "./stages"
 
 export const margin = 1;
 
 export const App = () => {
 	// const { playerX, playerY } = usePlayer();
-	const { width, objects } = useWorld();
-	const { showDev, dialogueIndex } = useInterface();
+	const { width, objects, mission } = useWorld();
+	const { showDev } = useInterface();
 
 	return (
 		<Box>
@@ -38,7 +37,7 @@ export const App = () => {
 
 				<GameViewport />
 				<Box justifyContent="center">
-					<Text>{stages[0]?.missions[dialogueIndex]?.dialogue}</Text>
+					<Text>{mission.dialogue}</Text>
 				</Box>
 				<Stats />
 			</Box>

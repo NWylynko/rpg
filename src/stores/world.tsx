@@ -75,6 +75,20 @@ export function WorldStoreProvider({
 
 			object.inContactWith = updateObjectsInRadius(object);
 
+			object.inContactWith.map((id) => {
+				if (typeof id === "string") {
+					const asset = stage.assets.find((asset) => asset.id === id)
+					const { onContact } = asset || {};
+					if (onContact) {
+						const func = {
+							"nextMission": nextMission,
+							"nextStage": nextStage
+						}
+						func[onContact]()
+					}
+				}
+			})
+
 			selectedObject = { ...selectedObject, ...object };
 
 			s = [...s, selectedObject];
@@ -102,7 +116,7 @@ export function WorldStoreProvider({
 		return inContactWith;
 	};
  
-		const stage: Stage = stages[stageIndex] || ({} as Stage);
+	const stage: Stage = stages[stageIndex] || ({} as Stage);
 
 	const store: WorldStore = {
 		width,

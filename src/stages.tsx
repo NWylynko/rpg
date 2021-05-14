@@ -13,7 +13,7 @@ export interface Mission {
 }
 
 export interface Asset extends AssetProps {
-	onContact: "nextMission"
+	onContact: "nextMission" | "nextStage"
 }
 
 export const stages: Stage[] = [
